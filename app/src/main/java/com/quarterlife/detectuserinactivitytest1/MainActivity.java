@@ -7,12 +7,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     public static final long DISCONNECT_TIMEOUT = 1 * 60 * 1000; // set inactivity time : 1 minute
     private boolean isFirstOnResume = true; // detect if the application is onResume() for the first time or not
-    private ImageView ad_img;
+    private static ImageView ad_img;
+    public static boolean previousPage = false; // default: no previous page
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,17 +29,23 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+
     // create callback
     private Runnable disconnectCallback = new Runnable() {
         @Override
         public void run() {
-            ad_img.setVisibility(View.VISIBLE); // show ad_img
+            showADImg(); // show ad_img
         }
     };
 
+    // show ad_img
+    public static void showADImg() {
+        ad_img.setVisibility(View.VISIBLE); // show ad_img
+    }
+
     // reset timer
     public void resetDisconnectTimer(){
-        System.out.println("=== EWT resetDisconnectTimer() ===");
+        System.out.println("=== MainActivity resetDisconnectTimer() ===");
         isFirstOnResume = false; // set isFirstLaunch = false
 
         disconnectHandler.removeCallbacks(disconnectCallback); // remove the old one
@@ -48,14 +54,14 @@ public class MainActivity extends AppCompatActivity {
 
     // stop timer
     public void stopDisconnectTimer(){
-        System.out.println("=== EWT stopDisconnectTimer ===");
+        System.out.println("=== MainActivity stopDisconnectTimer ===");
         disconnectHandler.removeCallbacks(disconnectCallback); // remove the old one
     }
 
     // onUserInteraction: if user have any interaction, including touch, slide, click, etc.
     @Override
     public void onUserInteraction(){
-        System.out.println("=== EWT onUserInteraction ===");
+        System.out.println("=== MainActivity onUserInteraction ===");
 
         /*  if user have any interaction,
         *   we will reset the timer */
@@ -68,7 +74,13 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         /*  do not reset the timer when the application is onResume() for the first time  */
-        if(!isFirstOnResume) resetDisconnectTimer();
+        if(!isFirstOnResume){
+            if(!previousPage){ // no previous page
+                resetDisconnectTimer(); // reset timer
+            } else { // from another page
+                previousPage = false; // reset previousPage
+            }
+        }
     }
 
     // onStop
@@ -80,8 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
     // go to IntroductionActivity
     public void goIntro(View view) {
-//        startActivity(new Intent(MainActivity.this, IntroductionActivity.class));
-        Toast.makeText(this, "Click!", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(MainActivity.this, IntroductionActivity.class));
     }
 
     // hide ad_img
