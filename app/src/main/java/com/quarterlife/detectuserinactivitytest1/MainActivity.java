@@ -12,7 +12,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.VideoView;
 
-public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErrorListener,MediaPlayer.OnCompletionListener {
+public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErrorListener,MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener {
     public static final long DISCONNECT_TIMEOUT = 1 * 60 * 1000; // set inactivity time : 1 minute
     private boolean isFirstOnResume = true; // detect if the application is onResume() for the first time or not
     private static boolean isVideo = true; // connect API and check if AD is video or not ( true -> video / false -> image )
@@ -20,11 +20,15 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
     private static FrameLayout ad_video; // RelativeLayout
     private static VideoView videoView; // CustomVideoView
     public static boolean previousPage = false; // default: no previous page
+    private static String PACKAGE_NAME;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // get package name
+        PACKAGE_NAME = getPackageName();
 
         // initView
         ad_img = findViewById(R.id.imageView);
@@ -34,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
         // set videoView callback
         videoView.setOnCompletionListener(this);
         videoView.setOnErrorListener(this);
+        videoView.setOnPreparedListener(this);
 
         // connect API and check AD type
         showAD(); // show AD
@@ -50,6 +55,12 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
     public boolean onError(MediaPlayer mp, int what, int extra) {
         Log.d("MediaPlayer","video onError!!!");
         return true;
+    }
+
+    // video onPrepared
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        mp.setLooping(true); // set looping
     }
 
     // create handler
@@ -86,8 +97,8 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
             System.out.println("=== MainActivity setImageResource ===");
 
         } else { // video
-            videoView.setVideoPath("https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"); // set video path
-//            videoView.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.video)); // set video uri
+//            videoView.setVideoPath("https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"); // set video path : URL
+            videoView.setVideoPath("android.resource://" + PACKAGE_NAME + "/" + R.raw.vertical_video); // set video uri : local video
             videoView.start(); // start video
             System.out.println("=== MainActivity setVideoPath videoView.start() ===");
         }
