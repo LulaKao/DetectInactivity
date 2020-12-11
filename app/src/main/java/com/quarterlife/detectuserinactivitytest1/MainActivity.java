@@ -1,16 +1,23 @@
 package com.quarterlife.detectuserinactivitytest1;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.VideoView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.quarterlife.detectuserinactivitytest1.Fragment.HomeFragment;
+import com.quarterlife.detectuserinactivitytest1.Fragment.SettingFragment;
+import com.quarterlife.detectuserinactivitytest1.Fragment.UserFragment;
 
 public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErrorListener,MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener {
     public static final long DISCONNECT_TIMEOUT = 1 * 60 * 1000; // set inactivity time : 1 minute
@@ -21,6 +28,11 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
     private static VideoView videoView; // CustomVideoView
     public static boolean previousPage = false; // default: no previous page
     private static String PACKAGE_NAME;
+    private BottomNavigationView bottomNavigationView;
+    private Fragment selectedFragment = null;
+    private HomeFragment homeFragment = null;
+    private UserFragment userFragment = null;
+    private SettingFragment settingFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +42,11 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
         // get package name
         PACKAGE_NAME = getPackageName();
 
-        // initView
+        // initialize View
         ad_img = findViewById(R.id.imageView);
         ad_video = findViewById(R.id.videoLayout);
         videoView = findViewById(R.id.videoView);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
 
         // set videoView callback
         videoView.setOnCompletionListener(this);
@@ -42,7 +55,44 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
 
         // connect API and check AD type
         showAD(); // show AD
+
+        // setOnNavigationItemSelectedListener
+        bottomNavigationView.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
+
+        // initialize Fragment
+        homeFragment = new HomeFragment();
+        userFragment = new UserFragment();
+        settingFragment = new SettingFragment();
+
+        // set default fragment : HomeFragment
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, homeFragment).commit();
     }
+
+    // set BottomNavigationView
+    private BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener =
+            new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                    // set selected fragment
+                    switch (menuItem.getItemId()){
+                        case R.id.nav_home:
+                            selectedFragment = homeFragment;
+                            break;
+                        case R.id.nav_user:
+                            selectedFragment = userFragment;
+                            break;
+                        case R.id.nav_setting:
+                            selectedFragment = settingFragment;
+                            break;
+                    }
+
+                    // replace selected fragment on fragment container
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                            selectedFragment).commit();
+
+                    return true;
+                }
+            };
 
     // video onCompletion
     @Override
