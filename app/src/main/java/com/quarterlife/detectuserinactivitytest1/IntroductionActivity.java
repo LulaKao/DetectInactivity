@@ -26,7 +26,7 @@ public class IntroductionActivity extends AppCompatActivity {
         @Override
         public void run() {
             finish(); // finish this Activity
-            MainActivity.showADImg(); // show ad_img
+            MainActivity.showAD(); // show AD
             MainActivity.previousPage = true; // set MainActivity.previousPage = true
         }
     };
