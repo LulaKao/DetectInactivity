@@ -60,7 +60,7 @@ public class IntroductionActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
 
-        resetDisconnectTimer();
+        resetDisconnectTimer(); // reset timer
     }
 
     // onStop

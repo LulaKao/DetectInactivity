@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
     private static FrameLayout ad_video; // RelativeLayout
     private static VideoView videoView; // CustomVideoView
     public static boolean previousPage = false; // default: no previous page
-    private static String PACKAGE_NAME;
+    public static String PACKAGE_NAME;
     private BottomNavigationView bottomNavigationView;
     private Fragment selectedFragment = null;
     private HomeFragment homeFragment = null;
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
         // get package name
         PACKAGE_NAME = getPackageName();
 
-        // initialize View
+        // initial View
         ad_img = findViewById(R.id.imageView);
         ad_video = findViewById(R.id.videoLayout);
         videoView = findViewById(R.id.videoView);
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
         // setOnNavigationItemSelectedListener
         bottomNavigationView.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
 
-        // initialize Fragment
+        // initial Fragment
         homeFragment = new HomeFragment();
         userFragment = new UserFragment();
         settingFragment = new SettingFragment();
@@ -97,13 +97,13 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
     // video onCompletion
     @Override
     public void onCompletion(MediaPlayer mp) {
-        Log.d("MediaPlayer","video onCompletion");
+        Log.d("MediaPlayer","MainActivity video onCompletion");
     }
 
     // video onError
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        Log.d("MediaPlayer","video onError!!!");
+        Log.d("MediaPlayer","MainActivity video onError!!!");
         return true;
     }
 
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
 
         } else { // video
 //            videoView.setVideoPath("https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"); // set video path : URL
-            videoView.setVideoPath("android.resource://" + PACKAGE_NAME + "/" + R.raw.vertical_video); // set video uri : local video
+            videoView.setVideoPath("android.resource://" + PACKAGE_NAME + "/" + R.raw.vertical_video); // set video path : local video
             videoView.start(); // start video
             System.out.println("=== MainActivity setVideoPath videoView.start() ===");
         }
@@ -215,11 +215,6 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
         if(videoView != null && ad_video.getVisibility() == View.VISIBLE) videoView.stopPlayback(); // stop video
     }
 
-    // go to IntroductionActivity
-    public void goIntro(View view) {
-        startActivity(new Intent(MainActivity.this, IntroductionActivity.class));
-    }
-
     // hide ad_img
     public void imgGone(View view) {
         System.out.println("=== imgGone ===");
@@ -231,5 +226,6 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
         System.out.println("=== videoGone ===");
         if(videoView != null) videoView.stopPlayback(); // stop video
         if(ad_video.getVisibility() != View.GONE) ad_video.setVisibility(View.GONE); // hide ad_video
+        HomeFragment.startHomeVideo(); // start HomeFragment video
     }
 }
