@@ -3,29 +3,26 @@ package com.quarterlife.detectuserinactivitytest1;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.VideoView;
+import com.dueeeke.videoplayer.player.VideoView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.quarterlife.detectuserinactivitytest1.Fragment.HomeFragment;
 import com.quarterlife.detectuserinactivitytest1.Fragment.SettingFragment;
 import com.quarterlife.detectuserinactivitytest1.Fragment.UserFragment;
 
-public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErrorListener,MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener {
+public class MainActivity extends AppCompatActivity {
     public static final long DISCONNECT_TIMEOUT = 1 * 60 * 1000; // set inactivity time : 1 minute
     private boolean isFirstOnResume = true; // detect if the application is onResume() for the first time or not
     private static boolean isVideo = true; // connect API and check if AD is video or not ( true -> video / false -> image )
     private static ImageView ad_img;
-    private static FrameLayout ad_video; // RelativeLayout
-    private static VideoView videoView; // CustomVideoView
+    private static FrameLayout ad_video;
+    private static VideoView videoView;
     public static boolean previousPage = false; // default: no previous page
     public static String PACKAGE_NAME;
     private BottomNavigationView bottomNavigationView;
@@ -34,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
     private UserFragment userFragment = null;
     private SettingFragment settingFragment = null;
 
+    //========= onCreate START =========//
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,11 +45,6 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
         ad_video = findViewById(R.id.videoLayout);
         videoView = findViewById(R.id.videoView);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-
-        // set videoView callback
-        videoView.setOnCompletionListener(this);
-        videoView.setOnErrorListener(this);
-        videoView.setOnPreparedListener(this);
 
         // connect API and check AD type
         showAD(); // show AD
@@ -67,8 +60,9 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
         // set default fragment : HomeFragment
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, homeFragment).commit();
     }
+    //========= onCreate END =========//
 
-    // set BottomNavigationView
+    //========= set BottomNavigationView START =========//
     private BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
@@ -93,42 +87,25 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
                     return true;
                 }
             };
+    //========= set BottomNavigationView END =========//
 
-    // video onCompletion
-    @Override
-    public void onCompletion(MediaPlayer mp) {
-        Log.d("MediaPlayer","MainActivity video onCompletion");
-    }
-
-    // video onError
-    @Override
-    public boolean onError(MediaPlayer mp, int what, int extra) {
-        Log.d("MediaPlayer","MainActivity video onError!!!");
-        return true;
-    }
-
-    // video onPrepared
-    @Override
-    public void onPrepared(MediaPlayer mp) {
-        mp.setLooping(true); // set looping
-    }
-
-    // create handler
+    //========= create handler START =========//
     private Handler disconnectHandler = new Handler(){
         public void handleMessage(Message msg) {
         }
     };
+    //========= create handler END =========//
 
-
-    // create callback
+    //========= create callback START =========//
     private Runnable disconnectCallback = new Runnable() {
         @Override
         public void run() {
             showAD(); // show AD
         }
     };
+    //========= create callback END =========//
 
-    // show AD
+    //========= show AD START =========//
     public static void showAD() {
         System.out.println("=== MainActivity showAD() ===");
 
@@ -147,14 +124,15 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
             System.out.println("=== MainActivity setImageResource ===");
 
         } else { // video
-//            videoView.setVideoPath("https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"); // set video path : URL
-            videoView.setVideoPath("android.resource://" + PACKAGE_NAME + "/" + R.raw.vertical_video); // set video path : local video
+//            videoView.setUrl("https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"); // set video url
+            videoView.setUrl("android.resource://" + PACKAGE_NAME + "/" + R.raw.vertical_video); // set local video path
             videoView.start(); // start video
             System.out.println("=== MainActivity setVideoPath videoView.start() ===");
         }
     }
+    //========= show AD END =========//
 
-    // reset timer
+    //========= reset timer START =========//
     public void resetDisconnectTimer(){
         System.out.println("=== MainActivity resetDisconnectTimer() ===");
         isFirstOnResume = false; // set isFirstLaunch = false
@@ -162,24 +140,27 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
         disconnectHandler.removeCallbacks(disconnectCallback); // remove the old one
         disconnectHandler.postDelayed(disconnectCallback, DISCONNECT_TIMEOUT); // post the new one
     }
+    //========= reset timer END =========//
 
-    // stop timer
+    //========= stop timer START =========//
     public void stopDisconnectTimer(){
         System.out.println("=== MainActivity stopDisconnectTimer ===");
         disconnectHandler.removeCallbacks(disconnectCallback); // remove the old one
     }
+    //========= stop timer END =========//
 
-    // onUserInteraction: if user have any interaction, including touch, slide, click, etc.
+    //========= onUserInteraction START =========//
     @Override
-    public void onUserInteraction(){
+    public void onUserInteraction(){ // onUserInteraction: if user have any interaction, including touch, slide, click, etc.
         System.out.println("=== MainActivity onUserInteraction ===");
 
         /*  if user have any interaction,
         *   we will reset the timer */
         resetDisconnectTimer();
     }
+    //========= onUserInteraction END =========//
 
-    // onResume
+    //========= onResume START =========//
     @Override
     public void onResume() {
         super.onResume();
@@ -195,37 +176,59 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnErr
 
             /*  do not start video when the application is onResume() for the first time  */
             if(ad_video.getVisibility() == View.VISIBLE){
-                videoView.start(); // start video
-                System.out.println("=== MainActivity onResume() videoView.start() ===");
+                videoView.resume(); // resume video
+                System.out.println("=== MainActivity onResume() videoView.resume() ===");
             }
         }
     }
+    //========= onResume END =========//
 
-    // onStop
+    //========= onPause START =========//
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(videoView != null && ad_video.getVisibility() == View.VISIBLE) videoView.pause(); // pause video
+    }
+    //========= onPause END =========//
+
+    //========= onDestroy START =========//
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(videoView != null) videoView.release(); // release video
+    }
+    //========= onDestroy END =========//
+
+    //========= onStop START =========//
     @Override
     public void onStop() {
         super.onStop();
         stopDisconnectTimer(); // stop timer
     }
+    //========= onStop END =========//
 
-    // onPause
+    //========= onBackPressed START =========//
     @Override
-    protected void onPause() {
-        super.onPause();
-        if(videoView != null && ad_video.getVisibility() == View.VISIBLE) videoView.stopPlayback(); // stop video
+    public void onBackPressed() {
+        if (!videoView.onBackPressed()) {
+            super.onBackPressed();
+        }
     }
+    //========= onBackPressed END =========//
 
-    // hide ad_img
+    //========= imgGone : hide ad_img START =========//
     public void imgGone(View view) {
         System.out.println("=== imgGone ===");
         if(ad_img.getVisibility() != View.GONE) ad_img.setVisibility(View.GONE); // hide ad_img
     }
+    //========= imgGone : hide ad_img END =========//
 
-    // hide ad_video
+    //========= videoGone : hide ad_video START =========//
     public void videoGone(View view) {
         System.out.println("=== videoGone ===");
-        if(videoView != null) videoView.stopPlayback(); // stop video
+        if(videoView != null) videoView.release(); // release video
         if(ad_video.getVisibility() != View.GONE) ad_video.setVisibility(View.GONE); // hide ad_video
         HomeFragment.startHomeVideo(); // start HomeFragment video
     }
+    //========= videoGone : hide ad_video END =========//
 }

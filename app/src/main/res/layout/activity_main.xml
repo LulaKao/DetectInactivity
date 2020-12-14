@@ -61,11 +61,12 @@
         android:background="@android:color/black"
         android:onClick="videoGone">
 
-        <VideoView
+        <com.dueeeke.videoplayer.player.VideoView
             android:id="@+id/videoView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"/>
+            app:screenScaleType="type_center_crop"
+            app:looping="true"/>
 
     </FrameLayout>
 
