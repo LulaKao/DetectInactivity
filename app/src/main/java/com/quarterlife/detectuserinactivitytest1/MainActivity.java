@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private static boolean isVideo = true; // connect API and check if AD is video or not ( true -> video / false -> image )
     private static ImageView ad_img;
     private static FrameLayout ad_video;
-    private static VideoView videoView;
+    private static VideoView ad_videoView;
     public static boolean previousPage = false; // default: no previous page
     public static String PACKAGE_NAME;
     private BottomNavigationView bottomNavigationView;
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         // initial View
         ad_img = findViewById(R.id.imageView);
         ad_video = findViewById(R.id.videoLayout);
-        videoView = findViewById(R.id.videoView);
+        ad_videoView = findViewById(R.id.videoView);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         viewPager = findViewById(R.id.fragment_container);
 
@@ -116,7 +116,8 @@ public class MainActivity extends AppCompatActivity {
 
     //========= show AD START =========//
     public static void showAD() {
-        System.out.println("=== MainActivity showAD() ===");
+        // if HomeFragment's videoView is playing, pause the video
+        if(HomeFragment.home_videoView != null && HomeFragment.home_videoView.isPlaying()) HomeFragment.home_videoView.pause(); // pause video
 
         // set visibility
         if(!isVideo){ // image
@@ -130,20 +131,17 @@ public class MainActivity extends AppCompatActivity {
         // set content
         if(!isVideo){ // image
             ad_img.setImageResource(R.drawable.ad_image); // set image resource
-            System.out.println("=== MainActivity setImageResource ===");
 
         } else { // video
-//            videoView.setUrl("https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"); // set video url
-            videoView.setUrl("android.resource://" + PACKAGE_NAME + "/" + R.raw.vertical_video); // set local video path
-            videoView.start(); // start video
-            System.out.println("=== MainActivity setVideoPath videoView.start() ===");
+//            ad_videoView.setUrl("https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"); // set video url
+            ad_videoView.setUrl("android.resource://" + PACKAGE_NAME + "/" + R.raw.vertical_video); // set local video path
+            ad_videoView.start(); // start video
         }
     }
     //========= show AD END =========//
 
     //========= reset timer START =========//
     public void resetDisconnectTimer(){
-        System.out.println("=== MainActivity resetDisconnectTimer() ===");
         isFirstOnResume = false; // set isFirstLaunch = false
 
         disconnectHandler.removeCallbacks(disconnectCallback); // remove the old one
@@ -153,19 +151,14 @@ public class MainActivity extends AppCompatActivity {
 
     //========= stop timer START =========//
     public void stopDisconnectTimer(){
-        System.out.println("=== MainActivity stopDisconnectTimer ===");
         disconnectHandler.removeCallbacks(disconnectCallback); // remove the old one
     }
     //========= stop timer END =========//
 
     //========= onUserInteraction START =========//
     @Override
-    public void onUserInteraction(){ // onUserInteraction: if user have any interaction, including touch, slide, click, etc.
-        System.out.println("=== MainActivity onUserInteraction ===");
-
-        /*  if user have any interaction,
-        *   we will reset the timer */
-        resetDisconnectTimer();
+    public void onUserInteraction(){ // onUserInteraction: any interaction, including touch, slide, click, etc.
+        resetDisconnectTimer(); // if user have any interaction, reset the timer
     }
     //========= onUserInteraction END =========//
 
@@ -185,8 +178,7 @@ public class MainActivity extends AppCompatActivity {
 
             /*  do not start video when the application is onResume() for the first time  */
             if(ad_video.getVisibility() == View.VISIBLE){
-                videoView.resume(); // resume video
-                System.out.println("=== MainActivity onResume() videoView.resume() ===");
+                ad_videoView.resume(); // resume video
             }
         }
     }
@@ -196,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(videoView != null && ad_video.getVisibility() == View.VISIBLE) videoView.pause(); // pause video
+        if(ad_videoView != null && ad_video.getVisibility() == View.VISIBLE) ad_videoView.pause(); // pause video
     }
     //========= onPause END =========//
 
@@ -204,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(videoView != null) videoView.release(); // release video
+        if(ad_videoView != null) ad_videoView.release(); // release video
     }
     //========= onDestroy END =========//
 
@@ -219,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
     //========= onBackPressed START =========//
     @Override
     public void onBackPressed() {
-        if (!videoView.onBackPressed()) {
+        if (!ad_videoView.onBackPressed()) {
             super.onBackPressed();
         }
     }
@@ -227,16 +219,20 @@ public class MainActivity extends AppCompatActivity {
 
     //========= imgGone : hide ad_img START =========//
     public void imgGone(View view) {
-        System.out.println("=== imgGone ===");
         if(ad_img.getVisibility() != View.GONE) ad_img.setVisibility(View.GONE); // hide ad_img
     }
     //========= imgGone : hide ad_img END =========//
 
     //========= videoGone : hide ad_video START =========//
     public void videoGone(View view) {
-        System.out.println("=== videoGone ===");
-        if(videoView != null) videoView.release(); // release video
+        if(ad_videoView != null) ad_videoView.release(); // release video
         if(ad_video.getVisibility() != View.GONE) ad_video.setVisibility(View.GONE); // hide ad_video
+        viewPager.setCurrentItem(0); // switch viewPager to HomeFragment
+
+        // set bottomNavigationView selected item : HomeFragment
+        bottomNavigationView.setSelectedItemId(R.id.nav_home); // use this
+//        bottomNavigationView.getMenu().getItem(0).setChecked(true); // or this, both can work
+
         HomeFragment.startHomeVideo(); // start HomeFragment video
     }
     //========= videoGone : hide ad_video END =========//

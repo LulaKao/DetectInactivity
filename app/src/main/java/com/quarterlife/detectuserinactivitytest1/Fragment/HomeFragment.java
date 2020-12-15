@@ -15,7 +15,7 @@ import com.quarterlife.detectuserinactivitytest1.R;
 
 public class HomeFragment extends BaseFragment {
     private Button btn_go_intro;
-    private static VideoView videoView;
+    public static VideoView home_videoView;
 
     //========= onCreateView START =========//
     @Override
@@ -29,7 +29,7 @@ public class HomeFragment extends BaseFragment {
     //========= onFragmentFirstVisible START =========//
     @Override
     protected void onFragmentFirstVisible() {
-        videoView = getView().findViewById(R.id.videoView); // initial videoView
+        home_videoView = getView().findViewById(R.id.videoView); // initial videoView
     }
     //========= onFragmentFirstVisible END =========//
 
@@ -37,18 +37,10 @@ public class HomeFragment extends BaseFragment {
     @Override
     protected void onFragmentVisibleChange(boolean isVisible) {
         if (isVisible == true) {    /** fragment invisible --> visible  */
-            System.out.println("=== HomeFragment onFragmentVisibleChange if (isVisible == true) ===");
-            if(videoView != null && videoView.getCurrentPlayState() == VideoView.STATE_PAUSED){
-                System.out.println("=== HomeFragment onFragmentVisibleChange videoView.resume() ===");
-                videoView.resume(); // resume video
-            }
+            if(home_videoView != null && home_videoView.getCurrentPlayState() == VideoView.STATE_PAUSED) home_videoView.resume(); // resume video
 
         } else {    /** fragment visible --> invisible  */
-            System.out.println("=== HomeFragment onFragmentVisibleChange if (isVisible == false) ===");
-            if(videoView != null){
-                System.out.println("=== HomeFragment onFragmentVisibleChange videoView.pause() ===");
-                videoView.pause(); // release video
-            }
+            if(home_videoView != null) home_videoView.pause(); // pause video
         }
     }
     //========= onFragmentVisibleChange END =========//
@@ -71,16 +63,16 @@ public class HomeFragment extends BaseFragment {
 
     //========= start HomeFragment video START =========//
     public static void startHomeVideo() {
-        videoView.setUrl("android.resource://" + MainActivity.PACKAGE_NAME + "/" + R.raw.horizontal_video); // set local video path
-        videoView.start(); // start video
+        home_videoView.release(); // release video
+        home_videoView.setUrl("android.resource://" + MainActivity.PACKAGE_NAME + "/" + R.raw.horizontal_video); // set local video path
+        home_videoView.start(); // start video
     }
     //========= start HomeFragment video END =========//
 
     //========= onDestroy START =========//
     @Override
     public void onDestroy() {
-        System.out.println("=== HomeFragment onDestroy() videoView.release() ===");
-        if(videoView != null) videoView.release(); // release video
+        if(home_videoView != null) home_videoView.release(); // release video
         super.onDestroy();
     }
     //========= onDestroy END =========//
@@ -88,8 +80,7 @@ public class HomeFragment extends BaseFragment {
     //========= onPause START =========//
     @Override
     public void onPause() {
-        System.out.println("=== HomeFragment onPause() videoView.pause() ===");
-        if(videoView != null) videoView.pause(); // pause video
+        if(home_videoView != null) home_videoView.pause(); // pause video
         super.onPause();
     }
     //========= onPause END =========//
@@ -97,8 +88,7 @@ public class HomeFragment extends BaseFragment {
     //========= onResume START =========//
     @Override
     public void onResume() {
-        System.out.println("=== HomeFragment onResume() videoView.resume() ===");
-        if(videoView != null) videoView.resume(); // resume video
+        if(home_videoView != null) home_videoView.resume(); // resume video
         super.onResume();
     }
     //========= onResume END =========//
