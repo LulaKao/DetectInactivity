@@ -29,7 +29,7 @@ public class HomeFragment extends BaseFragment {
     //========= onFragmentFirstVisible START =========//
     @Override
     protected void onFragmentFirstVisible() {
-        videoView = getView().findViewById(R.id.videoView);
+        videoView = getView().findViewById(R.id.videoView); // initial videoView
     }
     //========= onFragmentFirstVisible END =========//
 
@@ -39,8 +39,8 @@ public class HomeFragment extends BaseFragment {
         if (isVisible == true) {    /** fragment invisible --> visible  */
             System.out.println("=== HomeFragment onFragmentVisibleChange if (isVisible == true) ===");
             if(videoView != null && videoView.getCurrentPlayState() == VideoView.STATE_PAUSED){
-                System.out.println("=== HomeFragment onFragmentVisibleChange videoView.replay(true) ===");
-                videoView.replay(true); // replay video
+                System.out.println("=== HomeFragment onFragmentVisibleChange videoView.resume() ===");
+                videoView.resume(); // resume video
             }
 
         } else {    /** fragment visible --> invisible  */

@@ -15,6 +15,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.quarterlife.detectuserinactivitytest1.Fragment.HomeFragment;
 import com.quarterlife.detectuserinactivitytest1.Fragment.SettingFragment;
 import com.quarterlife.detectuserinactivitytest1.Fragment.UserFragment;
+import com.quarterlife.detectuserinactivitytest1.ViewPager.CustomViewPager;
+import com.quarterlife.detectuserinactivitytest1.ViewPager.ViewPagerAdapter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     public static final long DISCONNECT_TIMEOUT = 1 * 60 * 1000; // set inactivity time : 1 minute
@@ -26,10 +30,7 @@ public class MainActivity extends AppCompatActivity {
     public static boolean previousPage = false; // default: no previous page
     public static String PACKAGE_NAME;
     private BottomNavigationView bottomNavigationView;
-    private Fragment selectedFragment = null;
-    private HomeFragment homeFragment = null;
-    private UserFragment userFragment = null;
-    private SettingFragment settingFragment = null;
+    private CustomViewPager viewPager;
 
     //========= onCreate START =========//
     @Override
@@ -45,22 +46,34 @@ public class MainActivity extends AppCompatActivity {
         ad_video = findViewById(R.id.videoLayout);
         videoView = findViewById(R.id.videoView);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
+        viewPager = findViewById(R.id.fragment_container);
 
         // connect API and check AD type
         showAD(); // show AD
 
-        // setOnNavigationItemSelectedListener
-        bottomNavigationView.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
-
-        // initial Fragment
-        homeFragment = new HomeFragment();
-        userFragment = new UserFragment();
-        settingFragment = new SettingFragment();
-
-        // set default fragment : HomeFragment
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, homeFragment).commit();
+        // initial ViewPager
+        initViewPager();
     }
     //========= onCreate END =========//
+
+    //========= initial ViewPager START =========//
+    private void initViewPager() {
+        // create ViewPagerAdapter
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        // set viewPagerAdapter
+        viewPager.setAdapter(viewPagerAdapter);
+        // create ArrayList<Fragment>
+        List<Fragment> list = new ArrayList<>();
+        // add Fragment in list
+        list.add(new HomeFragment());
+        list.add(new UserFragment());
+        list.add(new SettingFragment());
+        // set list to viewPagerAdapter
+        viewPagerAdapter.setList(list);
+        // setOnNavigationItemSelectedListener
+        bottomNavigationView.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
+    }
+    //========= initial ViewPager END =========//
 
     //========= set BottomNavigationView START =========//
     private BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener =
@@ -70,19 +83,15 @@ public class MainActivity extends AppCompatActivity {
                     // set selected fragment
                     switch (menuItem.getItemId()){
                         case R.id.nav_home:
-                            selectedFragment = homeFragment;
+                            viewPager.setCurrentItem(0);
                             break;
                         case R.id.nav_user:
-                            selectedFragment = userFragment;
+                            viewPager.setCurrentItem(1);
                             break;
                         case R.id.nav_setting:
-                            selectedFragment = settingFragment;
+                            viewPager.setCurrentItem(2);
                             break;
                     }
-
-                    // replace selected fragment on fragment container
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                            selectedFragment).commit();
 
                     return true;
                 }
