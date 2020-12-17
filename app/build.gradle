@@ -25,6 +25,7 @@ android {
     *   Logcat:
     *   Unable to instantiate activity ComponentInfo
     *   Didn't find class MainActivity  */
+
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
