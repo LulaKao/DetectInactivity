@@ -20,6 +20,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    /*  add this to resolve the problem:
+    *   Logcat:
+    *   Unable to instantiate activity ComponentInfo
+    *   Didn't find class MainActivity  */
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
 }
 
 dependencies {
