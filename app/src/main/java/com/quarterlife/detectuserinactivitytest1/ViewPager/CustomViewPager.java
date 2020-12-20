@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 
-// 取消 ViewPager 左右滑動換頁的功能
 public class CustomViewPager extends ViewPager {
     private boolean enabled;
 

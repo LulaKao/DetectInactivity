@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         ad_videoView = findViewById(R.id.videoView);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         viewPager = findViewById(R.id.fragment_container);
+        viewPager.setPagingEnabled(false); // 禁止左右滑動換頁
 
         // connect API and check AD type
         showAD(); // show AD
